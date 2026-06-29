@@ -50,6 +50,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            BASE_DIR / 'templates',
             '/home/Svetlana202/bibliasveta/templates',
             '/home/Svetlana202/bibliasveta/books/templates',
         ],
