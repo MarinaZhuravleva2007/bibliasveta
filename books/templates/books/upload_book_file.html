@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Загрузка файла для книги{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h3 class="mb-0"><i class="bi bi-file-pdf"></i> Загрузка файла книги</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Книга:</strong> {{ book.title }}</p>
+                <p><strong>Автор:</strong> {{ book.get_authors_display }}</p>
+                <hr>
+
+                {% if book.book_file %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> Текущий файл: {{ book.book_file.name }}
+                        <br>
+                        <a href="{{ book.book_file.url }}" target="_blank" class="btn btn-sm btn-info mt-2">
+                            <i class="bi bi-eye"></i> Просмотреть
+                        </a>
+                    </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Выберите PDF-файл:</label>
+                        {{ form.book_file }}
+                        {% if form.book_file.errors %}
+                            <div class="text-danger small">{{ form.book_file.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Поддерживаются только файлы формата PDF</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-purple">
+                            <i class="bi bi-upload"></i> Загрузить
+                        </button>
+                        <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

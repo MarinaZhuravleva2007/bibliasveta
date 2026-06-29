@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        {% if title == 'Избранное' %}
+            <i class="bi bi-heart-fill text-danger"></i>
+        {% else %}
+            <i class="bi bi-bookmark-star-fill text-warning"></i>
+        {% endif %}
+        {{ title }}
+    </h1>
+    <a href="{% url 'books:profile' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>
+
+<div class="row">
+    {% if items %}
+        {% for item in items %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if item.book.cover_image %}
+                        <img src="{{ item.book.cover_image.url }}" class="card-img-top" alt="{{ item.book.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="text-center p-3" style="height: 200px; background: #f8f9fa;">
+                            <i class="bi bi-book" style="font-size: 3rem; color: #6f42c1;"></i>
+                            <p>Нет обложки</p>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.book.title }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="bi bi-pencil"></i> {{ item.book.get_authors_display|truncatechars:40 }}<br>
+                                <i class="bi bi-calendar"></i> {{ item.book.publication_year|default:"Год не указан" }}
+                            </small>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge {% if item.book.status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ item.book.get_status_display }}
+                            </span>
+                            <small class="text-muted">Добавлено: {{ item.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="btn-group w-100">
+                            <a href="{% url 'books:book_detail' item.book.pk %}" class="btn btn-sm btn-purple">
+                                <i class="bi bi-eye"></i> Подробнее
+                            </a>
+                            {% if title == 'Избранное' %}
+                                <a href="{% url 'books:remove_from_favorites' item.book.pk %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить из избранного?')">
+                                    <i class="bi bi-heartbreak"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'books:remove_from_want_to_read' item.book.pk %}" class="btn btn-sm btn-outline-warning" onclick="return confirm('Удалить из списка?')">
+                                    <i class="bi bi-x-circle"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> {{ empty_message }}
+                <br>
+                <a href="{% url 'books:book_list' %}" class="btn btn-purple mt-3">
+                    <i class="bi bi-journal"></i> Перейти к каталогу
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

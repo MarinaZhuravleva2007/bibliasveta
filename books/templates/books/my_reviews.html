@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои отзывы{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-chat-dots"></i> Мои отзывы</h1>
+    <a href="{% url 'books:profile' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>
+
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-body">
+                <h2 class="display-4">{{ total_reviews }}</h2>
+                <p class="text-muted">Всего отзывов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-body">
+                <h2 class="display-4 text-warning">{{ avg_rating|floatformat:1 }}</h2>
+                <p class="text-muted">Средняя оценка</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Список отзывов -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-list"></i> Мои отзывы</h5>
+            </div>
+            <div class="card-body">
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{% url 'books:book_detail' review.book.pk %}" class="text-decoration-none">
+                                        <strong>{{ review.book.title }}</strong>
+                                    </a>
+                                    {% if review.rating %}
+                                        <span class="text-warning ms-2">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <p class="mt-2 mb-2">{{ review.comment|linebreaks|truncatewords:30 }}</p>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'books:edit_review' review.id %}" class="btn btn-sm btn-outline-purple">
+                                    <i class="bi bi-pencil"></i> Редактировать
+                                </a>
+                                <a href="{% url 'books:book_detail' review.book.pk %}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i> К книге
+                                </a>
+                            </div>
+                            
+                            <!-- Ответы на отзыв -->
+                            {% if review.replies.all %}
+                                <div class="mt-2 ms-3 border-start ps-3">
+                                    <small class="text-muted">Ответов: {{ review.replies.count }}</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center text-muted">У вас пока нет отзывов.</p>
+                    <div class="text-center">
+                        <a href="{% url 'books:book_list' %}" class="btn btn-purple">
+                            <i class="bi bi-journal"></i> Перейти к книгам
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

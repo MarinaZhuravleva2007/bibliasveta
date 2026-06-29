@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ publisher.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">{{ publisher.name }}</h1>
+                <hr>
+
+                {% if publisher.address %}
+                    <p><strong><i class="bi bi-geo-alt"></i> Адрес:</strong> {{ publisher.address }}</p>
+                {% endif %}
+
+                {% if publisher.phone %}
+                    <p><strong><i class="bi bi-telephone"></i> Телефон:</strong> {{ publisher.phone }}</p>
+                {% endif %}
+
+                {% if publisher.email %}
+                    <p><strong><i class="bi bi-envelope"></i> Email:</strong>
+                        <a href="mailto:{{ publisher.email }}">{{ publisher.email }}</a>
+                    </p>
+                {% endif %}
+
+                {% if publisher.website %}
+                    <p><strong><i class="bi bi-globe"></i> Сайт:</strong>
+                        <a href="{{ publisher.website }}" target="_blank">{{ publisher.website }}</a>
+                    </p>
+                {% endif %}
+
+                {% if publisher.description %}
+                    <hr>
+                    <h5><i class="bi bi-file-text"></i> Описание:</h5>
+                    <p>{{ publisher.description|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'books:publisher_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад к списку
+                </a>
+            </div>
+        </div>
+
+        <!-- Книги издательства -->
+        <div class="card mt-4">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-journal"></i> Книги издательства</h5>
+            </div>
+            <div class="card-body">
+                {% if books %}
+                    <div class="row">
+                        {% for book in books %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <a href="{% url 'books:book_detail' book.pk %}">{{ book.title }}</a>
+                                        </h6>
+                                        <p class="card-text small">
+                                            <i class="bi bi-pencil"></i> {{ book.get_authors_display|truncatechars:40 }}<br>
+                                            <i class="bi bi-calendar"></i> {{ book.publication_year|default:"Год не указан" }}
+                                        </p>
+                                        <span class="badge {% if book.status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ book.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Нет книг этого издательства</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

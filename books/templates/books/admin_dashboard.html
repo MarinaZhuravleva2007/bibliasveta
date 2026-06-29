@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Панель библиотекаря{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-speedometer2"></i> Панель библиотекаря</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #6f42c1, #9671d4);">
+            <div class="stat-icon"><i class="bi bi-journal"></i></div>
+            <div class="stat-number">{{ total_books }}</div>
+            <div class="stat-label">Всего книг</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #28a745, #20c997);">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Читателей</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+            <div class="stat-icon"><i class="bi bi-book"></i></div>
+            <div class="stat-number">{{ active_loans }}</div>
+            <div class="stat-label">Активных выдач</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+            <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+            <div class="stat-number">{{ overdue_loans }}</div>
+            <div class="stat-label">Просрочек</div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Последние выдачи</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Читатель</th>
+                                <th>Книга</th>
+                                <th>Срок</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in recent_loans %}
+                            <tr>
+                                <td>{{ loan.user.last_name }}</td>
+                                <td>{{ loan.book_copy.book.title|truncatechars:25 }}</td>
+                                <td class="{% if loan.is_overdue %}text-danger{% endif %}">{{ loan.due_date|date:"d.m.Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3">Нет выдач</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'books:admin_all_loans' %}" class="btn btn-sm btn-purple">Все выдачи</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header" style="background-color: #dc3545; color: white;">
+                <h5 class="mb-0"><i class="bi bi-currency-ruble"></i> Должники</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Читатель</th>
+                                <th>Долг</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in users_with_debt %}
+                                {% if item.debt > 0 %}
+                                <tr>
+                                    <td>{{ item.user.last_name }} {{ item.user.first_name }}</td>
+                                    <td class="text-danger">{{ item.debt }} руб.</td>
+                                </tr>
+                                {% endif %}
+                            {% empty %}
+                            <tr><td colspan="2">Нет должников</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'books:admin_all_fines' %}" class="btn btn-sm btn-purple">Все штрафы</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header" style="background-color: #17a2b8; color: white;">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="/admin/books/book/" class="btn btn-outline-purple w-100">
+                            <i class="bi bi-plus-circle"></i> Добавить книгу
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="/admin/books/customuser/" class="btn btn-outline-purple w-100">
+                            <i class="bi bi-person-plus"></i> Добавить читателя
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="/admin/books/loan/" class="btn btn-outline-purple w-100">
+                            <i class="bi bi-journal-plus"></i> Оформить выдачу
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

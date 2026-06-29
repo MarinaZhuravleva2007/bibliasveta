@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+            {% else %}
+                <div class="text-center p-5" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                    <i class="bi bi-book" style="font-size: 5rem; color: #6f42c1;"></i>
+                    <p class="mt-2 text-muted">Нет обложки</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">{{ book.title }}</h1>
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-pencil"></i> Авторы:</strong></p>
+                        <ul>
+                            {% for author in book.authors.all %}
+                                <li><a href="{% url 'books:author_detail' author.pk %}">{{ author.full_name }}</a></li>
+                            {% endfor %}
+                        </ul>
+
+                        <p><strong><i class="bi bi-building"></i> Издательство:</strong>
+                            {% if book.publisher %}
+                                <a href="{% url 'books:publisher_detail' book.publisher.pk %}">{{ book.publisher.name }}</a>
+                            {% else %}
+                                Не указано
+                            {% endif %}
+                        </p>
+
+                        <p><strong><i class="bi bi-tag"></i> Жанр:</strong> {{ book.genre|default:"Не указан" }}</p>
+
+                        <p><strong><i class="bi bi-children"></i> Возрастная категория:</strong>
+                            {{ book.age_category|default:"Не указана" }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-calendar"></i> Год издания:</strong> {{ book.publication_year|default:"Не указан" }}</p>
+                        <p><strong><i class="bi bi-upc-scan"></i> ISBN:</strong> {{ book.isbn|default:"Не указан" }}</p>
+                        <p><strong><i class="bi bi-files"></i> Страниц:</strong> {{ book.pages|default:"Не указано" }}</p>
+                        <p><strong><i class="bi bi-info-circle"></i> Статус:</strong>
+                            <span class="badge {% if book.status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ book.get_status_display }}
+                            </span>
+                        </p>
+                        <p><strong><i class="bi bi-files"></i> Доступно экземпляров:</strong>
+                            {{ book.quantity_available }} из {{ book.quantity_total }}
+                        </p>
+                    </div>
+                </div>
+
+                {% if book.description %}
+                    <hr>
+                    <h5><i class="bi bi-file-text"></i> Описание:</h5>
+                    <p>{{ book.description|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'books:book_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад к списку
+                </a>
+
+                {% if book_url %}
+                    <a href="{% url 'books:read_book' book.pk %}" class="btn btn-info float-end ms-2" target="_blank">
+                        <i class="bi bi-eye"></i> Читать онлайн
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary float-end ms-2" disabled>
+                        <i class="bi bi-link"></i> Ссылка не добавлена
+                    </button>
+                {% endif %}
+
+                {% if user.is_authenticated and not user.is_staff %}
+                    <div class="btn-group float-end me-2">
+                        {% if is_favorite %}
+                            <a href="{% url 'books:remove_from_favorites' book.pk %}" class="btn btn-sm btn-outline-danger" title="Удалить из избранного">
+                                <i class="bi bi-heart-fill text-danger"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'books:add_to_favorites' book.pk %}" class="btn btn-sm btn-outline-danger" title="Добавить в избранное">
+                                <i class="bi bi-heart"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if is_want_to_read %}
+                            <a href="{% url 'books:remove_from_want_to_read' book.pk %}" class="btn btn-sm btn-outline-warning" title="Удалить из 'Хочу прочитать'">
+                                <i class="bi bi-bookmark-star-fill text-warning"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'books:add_to_want_to_read' book.pk %}" class="btn btn-sm btn-outline-warning" title="Добавить в 'Хочу прочитать'">
+                                <i class="bi bi-bookmark-star"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if user.is_authenticated and not user.is_staff and book.status == 'available' and book.quantity_available > 0 %}
+                    <form method="post" action="{% url 'books:reserve_book' book.pk %}" style="display: inline;" class="float-end">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-purple">
+                            <i class="bi bi-bookmark-plus"></i> Забронировать
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Рейтинг книги -->
+{% if book.reviews_count > 0 %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0">
+                    <i class="bi bi-stars"></i> Рейтинг книги
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="display-1 text-warning">
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= book.avg_rating %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="lead">{{ book.avg_rating|floatformat:1 }} из 5 ({{ book.reviews_count }} отзывов)</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Отзывы -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Отзывы и обсуждение</h5>
+                {% if user.is_authenticated and not user.is_staff %}
+                    <a href="{% url 'books:add_review' book.pk %}" class="btn btn-sm btn-light">
+                        <i class="bi bi-plus-circle"></i> Написать отзыв
+                    </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if book.reviews.all %}
+                    {% for review in book.reviews.all %}
+                        {% if not review.parent %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ review.user.first_name }} {{ review.user.last_name }}</strong>
+                                        {% if review.rating %}
+                                            <span class="text-warning ms-2">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                                {% endfor %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                                </div>
+                                <p class="mt-2 mb-2">{{ review.comment|linebreaks }}</p>
+                                <div class="d-flex gap-2">
+                                    {% if user.is_authenticated and not user.is_staff %}
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('reply-form-{{ review.id }}').classList.toggle('d-none')">
+                                            <i class="bi bi-reply"></i> Ответить
+                                        </button>
+                                    {% endif %}
+                                    {% if review.user == user %}
+                                        <a href="{% url 'books:edit_review' review.id %}" class="btn btn-sm btn-outline-purple">
+                                            <i class="bi bi-pencil"></i> Редактировать
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Форма ответа -->
+                                <div id="reply-form-{{ review.id }}" class="mt-3 d-none">
+                                    <form method="post" action="{% url 'books:reply_review' review.id %}">
+                                        {% csrf_token %}
+                                        <textarea name="comment" class="form-control" rows="2" placeholder="Написать ответ..."></textarea>
+                                        <div class="mt-2">
+                                            <button type="submit" class="btn btn-sm btn-purple">Отправить</button>
+                                            <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('reply-form-{{ review.id }}').classList.add('d-none')">Отмена</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Ответы -->
+                                {% for reply in review.replies.all %}
+                                    <div class="ms-4 mt-3 border-start ps-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ reply.user.first_name }} {{ reply.user.last_name }}</strong>
+                                                <small class="text-muted ms-2">ответ</small>
+                                            </div>
+                                            <small class="text-muted">{{ reply.created_at|date:"d.m.Y H:i" }}</small>
+                                        </div>
+                                        <p class="mt-1 mb-1">{{ reply.comment }}</p>
+                                        {% if reply.user == user %}
+                                            <a href="{% url 'books:edit_review' reply.id %}" class="btn btn-sm btn-outline-purple">
+                                                <i class="bi bi-pencil"></i> Редактировать
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center text-muted">Пока нет отзывов. Будьте первым!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

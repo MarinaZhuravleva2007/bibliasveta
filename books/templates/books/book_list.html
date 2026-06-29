@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Каталог книг{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-journals"></i> Каталог книг</h1>
+</div>
+
+<!-- Поиск и фильтры -->
+<div class="search-form mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Поиск по названию или автору..." value="{{ query|default:'' }}">
+        </div>
+        <div class="col-md-3">
+            <select name="genre" class="form-select">
+                <option value="">Все жанры</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.id }}" {% if request.GET.genre|add:"0" == genre.id %}selected{% endif %}>
+                        {{ genre.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="age" class="form-select">
+                <option value="">Все возрастные категории</option>
+                {% for age in age_categories %}
+                    <option value="{{ age.id }}" {% if request.GET.age|add:"0" == age.id %}selected{% endif %}>
+                        {{ age.code }} - {{ age.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-purple w-100">
+                <i class="bi bi-search"></i> Найти
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Список книг -->
+<div class="row">
+    {% for book in books %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+                <div class="text-center p-4" style="height: 250px; background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                    <i class="bi bi-book" style="font-size: 4rem; color: #6f42c1;"></i>
+                    <p class="mt-2 text-muted">Нет обложки</p>
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text">
+                    <small class="text-muted">
+                        <i class="bi bi-pencil"></i> {{ book.get_authors_display|truncatechars:40 }}<br>
+                        <i class="bi bi-calendar"></i> {{ book.publication_year|default:"Год не указан" }}<br>
+                        <i class="bi bi-tag"></i> {{ book.genre|default:"Жанр не указан" }}
+                    </small>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge {% if book.status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                        {{ book.get_status_display }}
+                    </span>
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-files"></i> {{ book.quantity_available }}/{{ book.quantity_total }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-purple w-100">
+                    <i class="bi bi-eye"></i> Подробнее
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Книги не найдены.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Управление штрафами{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-currency-ruble"></i> Управление штрафами</h1>
+    <a href="{% url 'books:admin_dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header" style="background-color: #6f42c1; color: white;">
+        <h5 class="mb-0"><i class="bi bi-list"></i> Все штрафы</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Читатель</th>
+                        <th>Книга</th>
+                        <th>Дней просрочки</th>
+                        <th>Сумма</th>
+                        <th>Статус</th>
+                        <th>Дата начисления</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fine in fines %}
+                    <tr>
+                        <td>{{ fine.user.last_name }} {{ fine.user.first_name }}</td>
+                        <td>{{ fine.loan.book_copy.book.title }}</td>
+                        <td>{{ fine.days_overdue }}</td>
+                        <td class="fw-bold">{{ fine.amount }} руб.</td>
+                        <td>
+                            {% if fine.status == 'unpaid' %}
+                                <span class="badge bg-danger">Не оплачен</span>
+                            {% elif fine.status == 'paid' %}
+                                <span class="badge bg-success">Оплачен</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Отменён</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ fine.created_at|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if fine.status == 'unpaid' %}
+                                <a href="{% url 'books:admin_cancel_fine' fine.pk %}" class="btn btn-sm btn-warning" onclick="return confirm('Отменить штраф?')">
+                                    <i class="bi bi-x-circle"></i> Отменить
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Нет штрафов</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

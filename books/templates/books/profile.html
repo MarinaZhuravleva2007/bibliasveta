@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="bi bi-person-circle"></i> Личный кабинет</h1>
+        <p class="lead">Добро пожаловать, {{ user.first_name }} {{ user.last_name }}!</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Информация о читателе</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Роль:</th>
+                        <td>
+                            {% if user.role == 'adult' %}
+                                <span class="badge bg-primary">Взрослый читатель</span>
+                            {% else %}
+                                <span class="badge bg-success">Школьник</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Номер билета:</th>
+                        <td><strong>{{ user.library_card_number|default:"Не присвоен" }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user.email|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Телефон:</th>
+                        <td>{{ user.phone|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Дата рождения:</th>
+                        <td>{{ user.birth_date|date:"d.m.Y"|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Адрес:</th>
+                        <td>{{ user.address|default:"Не указан" }}</td>
+                    </tr>
+                </table>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'books:profile_edit' %}" class="btn btn-purple">
+                        <i class="bi bi-pencil"></i> Редактировать профиль
+                    </a>
+                    <a href="{% url 'books:my_reviews' %}" class="btn btn-info">
+                        <i class="bi bi-chat-dots"></i> Мои отзывы
+                    </a>
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="{% url 'books:my_favorites' %}" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-heart"></i> Избранное ({{ favorites_count }})
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'books:my_want_to_read' %}" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-bookmark-star"></i> Хочу прочитать ({{ want_to_read_count }})
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-book"></i> Текущие выдачи</h5>
+            </div>
+            <div class="card-body">
+                {% if current_loans %}
+                    <div class="list-group">
+                        {% for loan in current_loans %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ loan.book_copy.book.title }}</strong><br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> Выдана: {{ loan.issue_date|date:"d.m.Y" }}<br>
+                                            <i class="bi bi-calendar-check"></i> Срок: {{ loan.due_date|date:"d.m.Y" }}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        {% if loan.overdue %}
+                                            <span class="badge bg-danger">Просрочена на {{ loan.overdue_days }} дн.</span>
+                                        {% else %}
+                                            <span class="badge bg-success">В срок</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <form method="post" action="{% url 'books:return_book' loan.pk %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Вернуть книгу?')">
+                                            <i class="bi bi-box-arrow-in-left"></i> Вернуть
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted my-4">
+                        <i class="bi bi-info-circle"></i> У вас нет текущих выдач
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Штрафы -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" style="background-color: #dc3545; color: white;">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Штрафы</h5>
+            </div>
+            <div class="card-body">
+                {% if unpaid_fines %}
+                    <div class="alert alert-danger">
+                        <strong>Внимание!</strong> У вас есть неоплаченные штрафы на сумму {{ total_unpaid }} руб.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Книга</th>
+                                    <th>Дней просрочки</th>
+                                    <th>Сумма штрафа</th>
+                                    <th>Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fine in unpaid_fines %}
+                                    <tr>
+                                        <td>{{ fine.loan.book_copy.book.title }}</td>
+                                        <td>{{ fine.days_overdue }}</td>
+                                        <td>{{ fine.amount }} руб.</td>
+                                        <td>
+                                            <form method="post" action="{% url 'books:pay_fine' fine.pk %}" style="display: inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-credit-card"></i> Оплатить
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted my-3">
+                        <i class="bi bi-check-circle text-success"></i> У вас нет штрафов
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- История выдач -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> История выдач</h5>
+            </div>
+            <div class="card-body">
+                {% if loan_history %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Книга</th>
+                                    <th>Дата выдачи</th>
+                                    <th>Дата возврата</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in loan_history %}
+                                    <tr>
+                                        <td>{{ loan.book_copy.book.title }}</td>
+                                        <td>{{ loan.issue_date|date:"d.m.Y" }}</td>
+                                        <td>{{ loan.return_date|date:"d.m.Y" }}</td>
+                                        <td>
+                                            {% if loan.return_date > loan.due_date %}
+                                                <span class="badge bg-warning">С просрочкой</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Вовремя</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted my-4">
+                        <i class="bi bi-info-circle"></i> История выдач пуста
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

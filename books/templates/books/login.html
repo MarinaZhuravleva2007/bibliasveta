@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h3 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Вход в систему</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Неправильное имя пользователя или пароль. Попробуйте снова.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Имя пользователя:</label>
+                        <input type="text" name="username" class="form-control" id="id_username" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Пароль:</label>
+                        <input type="password" name="password" class="form-control" id="id_password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-purple w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Войти
+                    </button>
+                </form>
+
+                <hr>
+
+                <div class="text-center">
+                    <p>Нет аккаунта? <a href="{% url 'books:register' %}" class="text-purple">Зарегистрироваться</a></p>
+                    <p class="text-muted small mt-3">
+                        <i class="bi bi-info-circle"></i>
+                        Библиотекари входят через <a href="/admin/" class="text-purple">админ-панель</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="bi bi-question-circle"></i> Для тестирования:</h6>
+                <p class="mb-1"><strong>Читатель:</strong> зарегистрируйтесь самостоятельно</p>
+                <p class="mb-0"><strong>Библиотекарь:</strong> войдите через /admin/</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

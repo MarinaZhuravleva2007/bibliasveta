@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ author.full_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            {% if author.photo %}
+                <img src="{{ author.photo.url }}" class="card-img-top" alt="{{ author.full_name }}">
+            {% else %}
+                <div class="text-center p-5" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                    <i class="bi bi-person" style="font-size: 5rem; color: #6f42c1;"></i>
+                    <p class="mt-2 text-muted">Нет фото</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">{{ author.full_name }}</h1>
+                <hr>
+
+                <p><strong><i class="bi bi-calendar"></i> Дата рождения:</strong>
+                    {{ author.birth_date|date:"d.m.Y"|default:"Не указана" }}
+                </p>
+                {% if author.death_date %}
+                    <p><strong><i class="bi bi-calendar-check"></i> Дата смерти:</strong>
+                        {{ author.death_date|date:"d.m.Y" }}
+                    </p>
+                {% endif %}
+
+                {% if author.biography %}
+                    <hr>
+                    <h5><i class="bi bi-file-text"></i> Биография:</h5>
+                    <p>{{ author.biography|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'books:author_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад к списку
+                </a>
+            </div>
+        </div>
+
+        <!-- Книги автора -->
+        <div class="card mt-4">
+            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                <h5 class="mb-0"><i class="bi bi-journal"></i> Книги автора</h5>
+            </div>
+            <div class="card-body">
+                {% if books %}
+                    <div class="row">
+                        {% for book in books %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <a href="{% url 'books:book_detail' book.pk %}">{{ book.title }}</a>
+                                        </h6>
+                                        <p class="card-text small">
+                                            <i class="bi bi-calendar"></i> {{ book.publication_year|default:"Год не указан" }}<br>
+                                            <i class="bi bi-tag"></i> {{ book.genre|default:"Жанр не указан" }}
+                                        </p>
+                                        <span class="badge {% if book.status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ book.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Нет книг этого автора</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

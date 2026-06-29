@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - Библиотечная система{% endblock %}
+
+{% block content %}
+<!-- Приветственный баннер -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="p-5 rounded" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 5px solid #6f42c1;">
+            <h1 class="display-4">Добро пожаловать в библиотеку!</h1>
+            <p class="lead">Здесь вы найдете тысячи увлекательных книг. Наша библиотека постоянно пополняется новыми изданиями.</p>
+            <hr class="my-4" style="border-color: #6f42c1;">
+            <p>Используйте навигацию выше для просмотра каталога книг, авторов и издательств.</p>
+            <a class="btn btn-purple btn-lg" href="{% url 'books:book_list' %}" role="button">
+                <i class="bi bi-journal-bookmark-fill"></i> Перейти к каталогу
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-journal"></i></div>
+            <div class="stat-number">{{ total_books }}</div>
+            <div class="stat-label">Всего книг</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+            <div class="stat-number">{{ available_books }}</div>
+            <div class="stat-label">Доступно сейчас</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div class="stat-number">{{ total_authors }}</div>
+            <div class="stat-label">Авторов</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-building"></i></div>
+            <div class="stat-number">{{ total_publishers }}</div>
+            <div class="stat-label">Издательств</div>
+        </div>
+    </div>
+</div>
+
+<!-- Последние поступления -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-clock-history"></i> Последние поступления</h2>
+    </div>
+</div>
+
+<div class="row">
+    {% for book in recent_books %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <div class="text-center p-3" style="height: 200px; background: #f8f9fa;">
+                    <i class="bi bi-book" style="font-size: 3rem; color: #6f42c1;"></i>
+                    <p>Нет обложки</p>
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title|truncatechars:50 }}</h5>
+                <p class="card-text">
+                    <small class="text-muted">
+                        <i class="bi bi-pencil"></i> {{ book.get_authors_display|truncatechars:30 }}<br>
+                        <i class="bi bi-calendar"></i> {{ book.publication_year|default:"Год не указан" }}
+                    </small>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge {% if book.status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                        {{ book.get_status_display }}
+                    </span>
+                    <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-sm btn-purple">
+                        <i class="bi bi-eye"></i> Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> В библиотеке пока нет книг. Добавьте первую книгу через админ-панель.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
