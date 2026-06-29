@@ -1,0 +1,499 @@
+/* Основной белый фон */
+body {
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Фиолетовые кнопки */
+.btn-purple {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-purple:hover {
+    background-color: #5a32a3;
+    border-color: #5a32a3;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+}
+
+.btn-purple:active {
+    transform: translateY(0);
+}
+
+.btn-outline-purple {
+    color: #6f42c1;
+    border-color: #6f42c1;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-purple:hover {
+    background-color: #6f42c1;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-outline-purple.active {
+    background-color: #6f42c1;
+    color: white;
+    border-color: #6f42c1;
+}
+
+/* Карточки */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(111, 66, 193, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(111, 66, 193, 0.2);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #6f42c1;
+    font-weight: bold;
+    padding: 15px 20px;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 15px 20px;
+}
+
+/* Статистические карточки */
+.stat-card {
+    background: linear-gradient(135deg, #6f42c1, #9671d4);
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4);
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-card .stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Навигация */
+.navbar {
+    box-shadow: 0 2px 10px rgba(111, 66, 193, 0.2);
+    margin-bottom: 20px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.navbar-nav .nav-link {
+    transition: all 0.3s ease;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Ссылки */
+a {
+    color: #6f42c1;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #5a32a3;
+    text-decoration: underline;
+}
+
+/* Формы */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    transition: all 0.3s;
+    padding: 10px 12px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.form-check-input:checked {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.form-check-input:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+}
+
+.form-check-inline {
+    margin-right: 20px;
+}
+
+.form-check-label {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    color: #333;
+    border-bottom: 2px solid #6f42c1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+/* Таблицы */
+.table thead th {
+    background-color: #6f42c1;
+    color: white;
+    border-color: #5a32a3;
+    font-weight: 600;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(111, 66, 193, 0.05);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(111, 66, 193, 0.1);
+}
+
+/* Пагинация */
+.page-item.active .page-link {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.page-link {
+    color: #6f42c1;
+    transition: all 0.3s;
+}
+
+.page-link:hover {
+    color: #5a32a3;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Значки статуса */
+.badge-available {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-borrowed {
+    background-color: #ffc107;
+    color: black;
+}
+
+.badge-reserved {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.badge-repair {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.badge-lost {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Поисковая строка */
+.search-form {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #6f42c1;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Обложки книг */
+.book-cover {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Футер */
+footer {
+    margin-top: auto;
+    border-top: 2px solid #6f42c1;
+    background-color: #f8f9fa;
+    padding: 20px 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 15px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .btn-purple, .btn-outline-purple {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .btn-group .btn-outline-purple {
+        width: auto;
+        margin-bottom: 0;
+    }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card, .stat-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Стили для алфавитной навигации */
+.btn-group .btn-outline-purple {
+    margin: 0 2px;
+    border-radius: 5px;
+}
+
+.btn-group .btn-outline-purple:first-child {
+    margin-left: 0;
+}
+
+.btn-group .btn-outline-purple:last-child {
+    margin-right: 0;
+}
+
+/* Стили для личного кабинета */
+.profile-card {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-stats {
+    background: linear-gradient(135deg, #6f42c1, #9671d4);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.profile-stats .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Стили для детальных страниц */
+.detail-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.detail-info p {
+    margin-bottom: 10px;
+}
+
+/* Стили для сообщений об ошибках и успехе */
+.alert {
+    border-radius: 10px;
+    border-left: 4px solid;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.alert-success {
+    border-left-color: #28a745;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #17a2b8;
+}
+
+/* Стили для списка книг в карточках */
+.book-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.book-card .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6f42c1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5a32a3;
+}
+
+/* Дополнительные стили для форм регистрации и входа */
+.card-header h3 {
+    margin-bottom: 0;
+    border-bottom: none;
+    color: white;
+}
+
+.card-header h3 i {
+    margin-right: 10px;
+}
+
+/* Стили для радио-кнопок в формах */
+.form-check-input[type="radio"] {
+    width: 1.1em;
+    height: 1.1em;
+    margin-top: 0.1em;
+}
+
+/* Стили для списка книг автора */
+.author-books-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Стили для пустых состояний */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #6f42c1;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
