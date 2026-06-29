@@ -49,7 +49,10 @@ ROOT_URLCONF = 'library_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            '/home/Svetlana202/bibliasveta/templates',
+            '/home/Svetlana202/bibliasveta/books/templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
